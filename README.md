@@ -9,12 +9,21 @@
 
 ## 설치 방법
 
-1. 필요한 패키지 설치:
+1. GPIO 권한 설정:
+```bash
+# gpio 그룹에 현재 유저 추가
+sudo usermod -a -G gpio $USER
+
+# 변경사항을 적용하기 위해 재로그인하거나 다음 명령어 실행
+newgrp gpio
+```
+
+2. 필요한 패키지 설치:
 ```bash
 pip install -r requirements.txt
 ```
 
-2. 서버 실행:
+3. 서버 실행:
 ```bash
 python main.py
 ```
@@ -40,3 +49,9 @@ curl -X POST "http://localhost:8000/esc/speed/50"
 ```bash
 curl -X POST "http://localhost:8000/servo/angle/90"
 ```
+
+## 주의사항
+
+1. GPIO 접근 권한이 없는 경우 "Permission denied" 오류가 발생할 수 있습니다.
+2. 권한 설정 후에도 문제가 지속되면 라즈베리파이를 재부팅해보세요.
+3. 서버 실행 시 sudo 권한이 필요하지 않도록 반드시 GPIO 권한 설정을 먼저 진행해주세요.
