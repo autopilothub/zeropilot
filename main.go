@@ -13,21 +13,15 @@ import (
 	"github.com/stianeikeland/go-rpio/v4"
 )
 
-// ESC and Servo configuration
+// ESC configuration
 const (
 	escPin     = 18
-	servoPin   = 17
 	pwmFreq    = 50 // 50Hz
 	escMinDuty = 5  // 5% duty cycle
 	escMaxDuty = 10 // 10% duty cycle
-	servoMinDuty = 2.5  // 2.5% duty cycle
-	servoMaxDuty = 12.5 // 12.5% duty cycle
 )
 
-var (
-	escPWM   rpio.Pin
-	servoPWM rpio.Pin
-)
+var escPWM rpio.Pin
 
 // Response represents the API response structure
 type Response struct {
@@ -46,21 +40,14 @@ func initGPIO() error {
 	escPWM.Freq(pwmFreq * 1000) // Convert to Hz
 	escPWM.DutyCycle(0, 100)    // Start with 0% duty cycle
 
-	// Initialize Servo pin
-	servoPWM = rpio.Pin(servoPin)
-	servoPWM.Mode(rpio.Pwm)
-	servoPWM.Freq(pwmFreq * 1000) // Convert to Hz
-	servoPWM.DutyCycle(0, 100)    // Start with 0% duty cycle
-
 	// Initialize ESC (send minimum signal)
 	escPWM.DutyCycle(uint32(escMinDuty), 100)
 	return nil
 }
 
 func cleanup() {
-	// Stop motors
+	// Stop ESC
 	escPWM.DutyCycle(0, 100)
-	servoPWM.DutyCycle(0, 100)
 	
 	// Close GPIO
 	rpio.Close()
@@ -89,29 +76,6 @@ func setESCSpeed(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func setServoAngle(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	angle := vars["angle"]
-
-	// Convert angle to duty cycle
-	var angleValue float64
-	fmt.Sscanf(angle, "%f", &angleValue)
-	if angleValue < 0 || angleValue > 180 {
-		http.Error(w, "Angle must be between 0 and 180", http.StatusBadRequest)
-		return
-	}
-
-	// Calculate duty cycle
-	duty := servoMinDuty + (servoMaxDuty-servoMinDuty)*(angleValue/180)
-	servoPWM.DutyCycle(uint32(duty), 100)
-
-	// Send response
-	response := Response{
-		Message: fmt.Sprintf("Servo angle set to %.1f°", angleValue),
-	}
-	json.NewEncoder(w).Encode(response)
-}
-
 func main() {
 	// Initialize GPIO
 	if err := initGPIO(); err != nil {
@@ -124,9 +88,8 @@ func main() {
 
 	// Define routes
 	r.HandleFunc("/esc/speed/{speed}", setESCSpeed).Methods("POST")
-	r.HandleFunc("/servo/angle/{angle}", setServoAngle).Methods("POST")
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(Response{Message: "Raspberry Pi Zero Motor Control API"})
+		json.NewEncoder(w).Encode(Response{Message: "Raspberry Pi Zero ESC Control API"})
 	}).Methods("GET")
 
 	// Handle graceful shutdown

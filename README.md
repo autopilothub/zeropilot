@@ -1,11 +1,10 @@
-# Raspberry Pi Zero Motor Control API
+# Raspberry Pi Zero ESC Control API
 
-라즈베리파이 제로에서 ESC와 서보 모터를 제어하는 Go 웹 서버입니다.
+라즈베리파이 제로에서 ESC를 제어하는 Go 웹 서버입니다.
 
 ## 하드웨어 연결
 
 - ESC: GPIO 18번 핀에 연결
-- 서보 모터: GPIO 17번 핀에 연결
 
 ## 설치 방법
 
@@ -39,8 +38,8 @@ go run main.go
 
 5. 바이너리 빌드 (선택사항):
 ```bash
-go build -o motor-control
-./motor-control
+go build -o esc-control
+./esc-control
 ```
 
 ## API 엔드포인트
@@ -49,10 +48,6 @@ go build -o motor-control
 - `POST /esc/speed/{speed}`
   - speed: 0-100 사이의 정수값 (속도 %)
 
-### 서보 모터 제어
-- `POST /servo/angle/{angle}`
-  - angle: 0-180 사이의 정수값 (각도)
-
 ## 사용 예시
 
 ESC 속도 설정:
@@ -60,13 +55,9 @@ ESC 속도 설정:
 curl -X POST "http://localhost:8000/esc/speed/50"
 ```
 
-서보 모터 각도 설정:
-```bash
-curl -X POST "http://localhost:8000/servo/angle/90"
-```
-
 ## 주의사항
 
 1. GPIO 접근 권한이 없는 경우 "Permission denied" 오류가 발생할 수 있습니다.
 2. 권한 설정 후에도 문제가 지속되면 라즈베리파이를 재부팅해보세요.
 3. 서버 실행 시 sudo 권한이 필요하지 않도록 반드시 GPIO 권한 설정을 먼저 진행해주세요.
+4. ESC 초기화를 위해 서버 시작 시 최소 신호(5% 듀티 사이클)를 2초간 전송합니다.
