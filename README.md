@@ -18,12 +18,23 @@ sudo usermod -a -G gpio $USER
 newgrp gpio
 ```
 
-2. 필요한 패키지 설치:
+2. Python 가상 환경 설정:
+```bash
+# 가상 환경 생성
+python -m venv venv
+
+# 가상 환경 활성화
+source venv/bin/activate  # Linux/Mac
+# 또는
+.\venv\Scripts\activate  # Windows
+```
+
+3. 필요한 패키지 설치:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. 서버 실행:
+4. 서버 실행:
 ```bash
 python main.py
 ```
@@ -55,3 +66,4 @@ curl -X POST "http://localhost:8000/servo/angle/90"
 1. GPIO 접근 권한이 없는 경우 "Permission denied" 오류가 발생할 수 있습니다.
 2. 권한 설정 후에도 문제가 지속되면 라즈베리파이를 재부팅해보세요.
 3. 서버 실행 시 sudo 권한이 필요하지 않도록 반드시 GPIO 권한 설정을 먼저 진행해주세요.
+4. 가상 환경을 비활성화하려면 `deactivate` 명령어를 사용하세요.
