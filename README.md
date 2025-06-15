@@ -1,6 +1,6 @@
 # Raspberry Pi Zero Motor Control API
 
-라즈베리파이 제로에서 ESC와 서보 모터를 제어하는 웹 서버입니다. Python과 Go 두 가지 버전을 제공합니다.
+라즈베리파이 제로에서 ESC와 서보 모터를 제어하는 Go 웹 서버입니다.
 
 ## 하드웨어 연결
 
@@ -18,32 +18,7 @@ sudo usermod -a -G gpio $USER
 newgrp gpio
 ```
 
-### Python 버전
-
-1. Python 가상 환경 설정:
-```bash
-# 가상 환경 생성
-python -m venv venv
-
-# 가상 환경 활성화
-source venv/bin/activate  # Linux/Mac
-# 또는
-.\venv\Scripts\activate  # Windows
-```
-
-2. 필요한 패키지 설치:
-```bash
-pip install -r requirements.txt
-```
-
-3. 서버 실행:
-```bash
-python main.py
-```
-
-### Go 버전
-
-1. Go 설치 (1.16 이상):
+2. Go 설치 (1.16 이상):
 ```bash
 # 라즈베리파이에서 Go 설치
 wget https://golang.org/dl/go1.21.6.linux-armv6l.tar.gz
@@ -52,17 +27,17 @@ echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-2. 의존성 설치:
+3. 의존성 설치:
 ```bash
 go mod download
 ```
 
-3. 서버 실행:
+4. 서버 실행:
 ```bash
 go run main.go
 ```
 
-4. 바이너리 빌드 (선택사항):
+5. 바이너리 빌드 (선택사항):
 ```bash
 go build -o motor-control
 ./motor-control
@@ -95,5 +70,3 @@ curl -X POST "http://localhost:8000/servo/angle/90"
 1. GPIO 접근 권한이 없는 경우 "Permission denied" 오류가 발생할 수 있습니다.
 2. 권한 설정 후에도 문제가 지속되면 라즈베리파이를 재부팅해보세요.
 3. 서버 실행 시 sudo 권한이 필요하지 않도록 반드시 GPIO 권한 설정을 먼저 진행해주세요.
-4. Python 버전 사용 시 가상 환경을 비활성화하려면 `deactivate` 명령어를 사용하세요.
-5. Go 버전은 더 나은 성능과 낮은 메모리 사용량을 제공합니다.
