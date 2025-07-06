@@ -1,6 +1,6 @@
-# Raspberry Pi Zero Motor Control API
+# Jetson Xavier NX Motor Control API
 
-라즈베리파이 제로에서 ESC와 서보 모터를 제어하는 Python FastAPI 서버입니다.
+Jetson Xavier NX에서 ESC와 서보 모터를 제어하는 Python FastAPI 서버입니다.
 
 ## 하드웨어 연결
 
@@ -12,20 +12,20 @@
 
 1. I2C 활성화:
 ```bash
-# I2C 활성화
-sudo raspi-config
-# Interface Options > I2C > Enable
+# I2C 활성화 (Jetson Xavier NX)
+sudo apt-get update
+sudo apt-get install i2c-tools
+# I2C 버스 확인
+i2cdetect -l
 ```
 
 2. Python 가상 환경 설정:
 ```bash
 # 가상 환경 생성
-python -m venv venv
+python3 -m venv venv
 
 # 가상 환경 활성화
-source venv/bin/activate  # Linux/Mac
-# 또는
-.\venv\Scripts\activate  # Windows
+source venv/bin/activate
 ```
 
 3. 필요한 패키지 설치:
@@ -68,3 +68,4 @@ curl "http://localhost:8000/servo?angle=90"
 3. 서보 모터는 60-140도 범위로 제한되어 있습니다.
 4. ESC는 -70%에서 70% 범위로 제한되어 있습니다.
 5. 가상 환경을 비활성화하려면 `deactivate` 명령어를 사용하세요.
+6. Jetson Xavier NX는 ARM64 아키텍처이므로 호환되는 패키지를 설치해야 합니다.
