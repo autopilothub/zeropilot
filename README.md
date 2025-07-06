@@ -1,63 +1,70 @@
-# Raspberry Pi Zero ESC Control API
+# Raspberry Pi Zero Motor Control API
 
-라즈베리파이 제로에서 ESC를 제어하는 Go 웹 서버입니다.
+라즈베리파이 제로에서 ESC와 서보 모터를 제어하는 Python FastAPI 서버입니다.
 
 ## 하드웨어 연결
 
-- ESC: GPIO 18번 핀에 연결
+- PCA9685 PWM 컨트롤러를 I2C로 연결
+- ESC: 채널 0번에 연결
+- 서보 모터: 채널 1번에 연결
 
 ## 설치 방법
 
-1. GPIO 권한 설정:
+1. I2C 활성화:
 ```bash
-# gpio 그룹에 현재 유저 추가
-sudo usermod -a -G gpio $USER
-
-# 변경사항을 적용하기 위해 재로그인하거나 다음 명령어 실행
-newgrp gpio
+# I2C 활성화
+sudo raspi-config
+# Interface Options > I2C > Enable
 ```
 
-2. Go 설치 (1.16 이상):
+2. Python 가상 환경 설정:
 ```bash
-# 라즈베리파이에서 Go 설치
-wget https://golang.org/dl/go1.21.6.linux-armv6l.tar.gz
-sudo tar -C /usr/local -xzf go1.21.6.linux-armv6l.tar.gz
-echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
-source ~/.bashrc
+# 가상 환경 생성
+python -m venv venv
+
+# 가상 환경 활성화
+source venv/bin/activate  # Linux/Mac
+# 또는
+.\venv\Scripts\activate  # Windows
 ```
 
-3. 의존성 설치:
+3. 필요한 패키지 설치:
 ```bash
-go mod download
+pip install -r requirements.txt
 ```
 
 4. 서버 실행:
 ```bash
-go run main.go
-```
-
-5. 바이너리 빌드 (선택사항):
-```bash
-go build -o esc-control
-./esc-control
+cd src
+uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
 ## API 엔드포인트
 
 ### ESC 제어
-- `POST /esc/speed/{speed}`
-  - speed: 0-100 사이의 정수값 (속도 %)
+- `GET /esc?speed={speed}`
+  - speed: -70에서 70 사이의 정수값 (속도 %)
+
+### 서보 모터 제어
+- `GET /servo?angle={angle}`
+  - angle: 60에서 140 사이의 정수값 (각도)
 
 ## 사용 예시
 
 ESC 속도 설정:
 ```bash
-curl -X POST "http://localhost:8000/esc/speed/50"
+curl "http://localhost:8000/esc?speed=50"
+```
+
+서보 모터 각도 설정:
+```bash
+curl "http://localhost:8000/servo?angle=90"
 ```
 
 ## 주의사항
 
-1. GPIO 접근 권한이 없는 경우 "Permission denied" 오류가 발생할 수 있습니다.
-2. 권한 설정 후에도 문제가 지속되면 라즈베리파이를 재부팅해보세요.
-3. 서버 실행 시 sudo 권한이 필요하지 않도록 반드시 GPIO 권한 설정을 먼저 진행해주세요.
-4. ESC 초기화를 위해 서버 시작 시 최소 신호(5% 듀티 사이클)를 2초간 전송합니다.
+1. I2C가 활성화되어 있어야 합니다.
+2. PCA9685 PWM 컨트롤러가 올바르게 연결되어 있어야 합니다.
+3. 서보 모터는 60-140도 범위로 제한되어 있습니다.
+4. ESC는 -70%에서 70% 범위로 제한되어 있습니다.
+5. 가상 환경을 비활성화하려면 `deactivate` 명령어를 사용하세요.
