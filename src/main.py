@@ -3,7 +3,7 @@ from smbus2 import SMBus
 import time
 
 app = FastAPI()
-bus = SMBus(1)
+bus = SMBus(8)
 I2C_ADDR = 0x40
 ESC_CH = 0
 SERVO_CH = 1
